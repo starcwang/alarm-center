@@ -66,6 +66,7 @@ if (isAntDesignProPreview) {
 }
 
 export default {
+  outputPath: '../resources/static/',
   plugins,
   hash: true,
   targets: {
