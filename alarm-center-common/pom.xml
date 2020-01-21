@@ -7,9 +7,9 @@
         <artifactId>alarm-center</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>alarm-center-model</artifactId>
+    <artifactId>alarm-center-common</artifactId>
     <version>1.0.0</version>
-    <name>alarm-center-model</name>
+    <name>alarm-center-common</name>
     <description>Demo project for Spring Boot</description>
     <packaging>jar</packaging>
 
@@ -18,15 +18,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-annotation</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

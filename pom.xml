@@ -22,11 +22,28 @@
         <module>alarm-center-manager</module>
         <module>alarm-center-model</module>
         <module>alarm-center-dao</module>
+        <module>alarm-center-common</module>
     </modules>
 
     <properties>
         <java.version>1.8</java.version>
+        <mybatis.plus.version>3.3.1</mybatis.plus.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-annotation</artifactId>
+                <version>${mybatis.plus.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
