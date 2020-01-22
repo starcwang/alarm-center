@@ -17,6 +17,20 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.star.alarm</groupId>
+            <artifactId>alarm-center-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.star.alarm</groupId>
+            <artifactId>alarm-center-dao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
