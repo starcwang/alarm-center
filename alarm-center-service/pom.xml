@@ -8,7 +8,6 @@
         <version>1.0.0</version>
     </parent>
     <artifactId>alarm-center-service</artifactId>
-    <version>1.0.0</version>
     <name>alarm-center-service</name>
     <description>Demo project for Spring Boot</description>
     <packaging>jar</packaging>
