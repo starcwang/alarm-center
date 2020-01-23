@@ -14,4 +14,5 @@ create table if not exists `alarm`
     unique key `uk_group_code` (`group`, `code`),
     index `idx_code` (`code`),
     index `idx_name` (`name`)
-) engine = InnoDB default charset = utf8mb4 comment ='警报信息表';
+) engine = InnoDB
+  default charset = utf8mb4 comment ='警报信息表';

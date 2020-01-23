@@ -23,5 +23,5 @@ public class EmailAlarmDO extends BaseDO<Long> {
     /**
      * 英文逗号分隔的邮箱
      */
-    private Long email;
+    private String email;
 }
