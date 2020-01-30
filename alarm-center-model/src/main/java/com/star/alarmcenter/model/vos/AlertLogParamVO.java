@@ -13,8 +13,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AlertPointParamVO {
+public class AlertLogParamVO {
 
+    /** 组 */
+    private String groups;
     /** 代码 */
     private String code;
     /** 位置 */

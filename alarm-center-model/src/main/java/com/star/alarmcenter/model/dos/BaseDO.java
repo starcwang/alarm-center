@@ -27,4 +27,8 @@ public abstract class BaseDO<T> {
     /** 修改时间 */
     private Date gmtModified;
 
+    /** 常量 */
+    public static final String CONST_ID = "id";
+    public static final String CONST_GMT_CREATE = "gmtCreate";
+    public static final String CONST_GMT_MODIFIED = "gmtModified";
 }

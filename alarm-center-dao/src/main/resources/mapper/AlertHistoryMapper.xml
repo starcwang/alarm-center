@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.star.alarmcenter.dao.AlertHistoryDAO">
+
+    <select id="query" resultType="com.star.alarmcenter.model.vos.AlertHistoryVO">
+        select
+            ah.alarm_id as id,
+            ah.gmt_create as alertTime,
+            am.code as code,
+            am.`groups` as `groups`,
+            am.name as name,
+            am.expression as expression,
+            am.status as status,
+            am.`description` as `description`,
+            am.rule as rule,
+            am.interval_seconds as intervalSeconds
+        from alert_history ah
+        left join alarm am
+        on am.id = ah.alarm_id
+        <where>
+            <if test="param.id != null">
+                and ah.alarm_id = #{param.id}
+            </if>
+            <if test="param.groups != null">
+                and am.groups = #{param.groups}
+            </if>
+            <if test="param.code != null">
+                and am.code = #{param.code}
+            </if>
+            <if test="param.name != null">
+                and am.name like concat('%', #{param.name}, '%')
+            </if>
+            <if test="param.startTime != null">
+                and ah.gmt_create >= #{param.startTime}
+            </if>
+            <if test="param.endTime != null">
+                <![CDATA[and ah.gmt_create <= #{param.endTime}]]>
+            </if>
+        </where>
+        order by ah.gmt_create desc
+    </select>
+</mapper>

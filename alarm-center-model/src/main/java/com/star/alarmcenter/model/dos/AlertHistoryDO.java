@@ -1,11 +1,12 @@
 package com.star.alarmcenter.model.dos;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * alarm_log
+ * alert_history
  *
  * @author wangchao
  * @date 2020/01/22
@@ -13,10 +14,14 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString(callSuper = true)
-public class AlarmLogDO extends BaseDO<Long> {
+@TableName("alert_history")
+public class AlertHistoryDO extends BaseDO<Long> {
 
     /**
      * alarm表主键
      */
     private Long alarmId;
+
+    /** 常量 */
+    public static final String CONST_ALARM_ID = "alarmId";
 }

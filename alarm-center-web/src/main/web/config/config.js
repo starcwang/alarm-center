@@ -112,6 +112,12 @@ export default {
               authority: ['admin'],
             },
             {
+              name: '查询表格',
+              icon: 'smile',
+              path: '/alarmlist',
+              component: './alarm',
+            },
+            {
               component: './404',
             },
           ],

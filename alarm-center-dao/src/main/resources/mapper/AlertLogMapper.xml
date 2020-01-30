@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.star.alarmcenter.dao.AlertLogDAO">
+
+    <select id="query" resultType="com.star.alarmcenter.model.vos.AlertLogVO">
+        select
+            al.alarm_id as id,
+            al.gmt_create as logTime,
+            al.locate as locate,
+            al.message as message,
+            al.stack_trace as stackTrace,
+            am.code as code,
+            am.`groups` as `groups`,
+            am.name as name,
+            am.expression as expression,
+            am.status as status,
+            am.`description` as description,
+            am.rule as rule,
+            am.interval_seconds as intervalSeconds
+        from alert_log al
+        left join alarm am
+        on am.id = al.alarm_id
+        <where>
+            <if test="param.id != null">
+                and al.alarm_id = #{param.id}
+            </if>
+            <if test="param.groups != null">
+                and am.groups = #{param.groups}
+            </if>
+            <if test="param.code != null">
+                and am.code = #{param.code}
+            </if>
+            <if test="param.name != null">
+                and am.name like concat('%', #{param.name}, '%')
+            </if>
+            <if test="param.startTime != null">
+                and al.gmt_create >= #{param.startTime}
+            </if>
+            <if test="param.endTime != null">
+                <![CDATA[and al.gmt_create <= #{param.endTime}]]>
+            </if>
+        </where>
+        order by al.gmt_create desc
+    </select>
+</mapper>

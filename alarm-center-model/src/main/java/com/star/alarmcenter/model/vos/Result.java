@@ -1,10 +1,10 @@
 package com.star.alarmcenter.model.vos;
 
+import com.star.alarmcenter.common.ErrorCode;
 import com.star.alarmcenter.common.exception.CommonException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.http.HttpStatus;
 
 /**
  * @author wangchao
@@ -22,7 +22,7 @@ public class Result<T> {
     /**
      * 状态码
      *
-     * @see HttpStatus
+     * @see ErrorCode
      */
     private int code;
     /**
@@ -41,7 +41,7 @@ public class Result<T> {
     public static <R> Result<R> success(R data) {
         Result<R> result = new Result<>();
         result.setSuccess(true);
-        result.setCode(HttpStatus.OK.value());
+        result.setCode(ErrorCode.SUCCESS.getCode());
         result.setDesc("");
         result.setTimestamp(System.currentTimeMillis());
         result.setData(data);
@@ -63,11 +63,15 @@ public class Result<T> {
     }
 
     public static <R> Result<R> fail(R data, String desc) {
-        return fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), desc, data);
+        return fail(ErrorCode.UNKNOWN_ERROR.getCode(), desc, data);
     }
 
     public static <R> Result<R> fail(String desc) {
         return fail(null, desc);
+    }
+
+    public static <R> Result<R> fail() {
+        return fail(ErrorCode.UNKNOWN_ERROR.getCode(), ErrorCode.UNKNOWN_ERROR.getMsg());
     }
 
     public static <R> Result<R> fail(int code, String desc) {

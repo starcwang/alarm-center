@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.star.alarmcenter.dao.AlarmDAO">
+
+    <sql id="allProperties">
+        `id` as id,
+        `gmt_create` as gmtCreate,
+        `gmt_modified` as gmtModified,
+        `code` as code,
+        `groups` as groups,
+        `name` as name,
+        `expression` as expression,
+        `description` as description,
+        `status` as status,
+        `rule` as rule,
+        `interval_seconds` as intervalSeconds
+    </sql>
+
+    <select id="query" resultType="com.star.alarmcenter.model.dos.AlarmDO">
+        select <include refid="allProperties"/>
+        from alarm
+        <where>
+            <if test="param.id != null">
+                and id = #{param.id}
+            </if>
+            <if test="param.groups != null">
+                and groups = #{param.groups}
+            </if>
+            <if test="param.code != null">
+                and code = #{param.code}
+            </if>
+            <if test="param.name != null">
+                and name like concat('%', #{param.name}, '%')
+            </if>
+            <if test="param.status != null">
+                and status = #{param.status}
+            </if>
+        </where>
+        order by gmt_modified desc
+    </select>
+</mapper>

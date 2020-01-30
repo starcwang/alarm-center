@@ -1,4 +1,4 @@
-create table if not exists `alarm_log`
+create table if not exists `alert_history`
 (
     `id`           bigint(20)  not null auto_increment comment '主键',
     `gmt_create`   datetime(3) not null default current_timestamp(3) comment '创建时间',
@@ -7,4 +7,4 @@ create table if not exists `alarm_log`
     primary key (`id`),
     index `idx_alarmid` (`alarm_id`)
 ) engine = InnoDB
-  default charset = utf8mb4 comment ='报警日志记录表';
+  default charset = utf8mb4 comment ='报警触发记录表';

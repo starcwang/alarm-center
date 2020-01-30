@@ -1,7 +1,10 @@
 package com.star.alarmcenter.web.controller;
 
-import com.star.alarmcenter.model.vos.AlertPointParamVO;
+import javax.annotation.Resource;
+
+import com.star.alarmcenter.model.vos.AlertLogParamVO;
 import com.star.alarmcenter.model.vos.Result;
+import com.star.alarmcenter.service.AlertService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/alert")
 public class AlertController {
 
-    @PostMapping(value = "/point")
-    public Result<Void> point(@RequestBody AlertPointParamVO param) {
-        // TODO: 2020/1/23
+    @Resource
+    private AlertService alertService;
+
+    @PostMapping(value = "/log")
+    public Result<Void> log(@RequestBody AlertLogParamVO param) {
+        alertService.log(param);
         return Result.success();
     }
 }

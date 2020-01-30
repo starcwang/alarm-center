@@ -28,17 +28,29 @@
     "tsc": "tsc",
     "ui": "umi ui"
   },
-  "husky": { "hooks": { "pre-commit": "npm run lint-staged" } },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged"
+    }
+  },
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
-    "**/*.{js,jsx,tsx,ts,less,md,json}": ["prettier --write", "git add"]
+    "**/*.{js,jsx,tsx,ts,less,md,json}": [
+      "prettier --write",
+      "git add"
+    ]
   },
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 10"],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ],
   "dependencies": {
     "@ant-design/compatible": "^0.0.1-rc.0",
     "@ant-design/icons": "^4.0.0-alpha.19",
     "@ant-design/pro-layout": "4.11.0-0",
+    "@ant-design/pro-table": "^1.0.34",
     "@antv/data-set": "^0.10.2",
     "antd": "^4.0.0-rc.0",
     "classnames": "^2.2.6",
@@ -96,8 +108,12 @@
     "umi-plugin-pro": "^1.0.2",
     "umi-types": "^0.5.0"
   },
-  "optionalDependencies": { "puppeteer": "^2.0.0" },
-  "engines": { "node": ">=10.0.0" },
+  "optionalDependencies": {
+    "puppeteer": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "checkFiles": [
     "src/**/*.js*",
     "src/**/*.ts*",
