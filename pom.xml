@@ -18,11 +18,6 @@
     <modules>
         <module>alarm-center-api</module>
         <module>alarm-center-web</module>
-        <module>alarm-center-service</module>
-        <module>alarm-center-manager</module>
-        <module>alarm-center-model</module>
-        <module>alarm-center-dao</module>
-        <module>alarm-center-common</module>
     </modules>
 
     <properties>
@@ -59,11 +54,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-    </dependencies>
 </project>
