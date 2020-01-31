@@ -1,11 +1,9 @@
 package com.star.alarmcenter.service.impl;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
-import com.google.common.collect.ImmutableList;
 import com.star.alarmcenter.common.ErrorCode;
+import com.star.alarmcenter.common.enums.AlarmStatus;
 import com.star.alarmcenter.common.exception.CommonException;
 import com.star.alarmcenter.common.util.JsonUtil;
 import com.star.alarmcenter.manager.AlarmManager;
@@ -16,11 +14,8 @@ import com.star.alarmcenter.model.dos.AlertHistoryDO;
 import com.star.alarmcenter.model.dos.AlertLogDO;
 import com.star.alarmcenter.model.vos.AlertLogParamVO;
 import com.star.alarmcenter.service.AlertService;
-import com.star.alarmcenter.service.sender.AlarmSender;
+import com.star.alarmcenter.service.sender.AlarmSenderService;
 import com.star.alarmcenter.service.timer.AlarmTimer;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2020/01/28
  */
 @Service
-public class AlertServiceImpl implements AlertService, ApplicationContextAware, InitializingBean {
-    private ApplicationContext applicationContext;
+public class AlertServiceImpl implements AlertService {
 
-    /** 报警发送方式所有实现 */
-    private List<AlarmSender> alarmSenderList;
+    @Resource
+    private AlarmSenderService alarmSenderService;
 
     @Resource
     private AlarmTimer alarmTimer;
@@ -54,6 +48,10 @@ public class AlertServiceImpl implements AlertService, ApplicationContextAware, 
         if (alarm == null) {
             throw new CommonException(ErrorCode.BUSINESS_ERROR.getCode(), "alarm不存在");
         }
+        // 不可用
+        if (AlarmStatus.CLOSE.equals(alarm.getStatus())) {
+            return;
+        }
         // 记录打点
         AlertLogDO alarmPoint = new AlertLogDO();
         alarmPoint.setAlarmId(alarm.getId());
@@ -63,23 +61,12 @@ public class AlertServiceImpl implements AlertService, ApplicationContextAware, 
         alertLogManager.getBaseMapper().insert(alarmPoint);
 
         if (alarmTimer.doPoint(alarm)) {
-            for (AlarmSender alarmSender : alarmSenderList) {
-                alarmSender.send(param.getLocate(), param.getMessage(), param.getStackTraceList());
-            }
+            // 发送报警
+            alarmSenderService.asyncSend(alarm, param.getLocate(), param.getMessage(), param.getStackTraceList());
             // 记录报警次数
             AlertHistoryDO alarmLog = new AlertHistoryDO();
             alarmLog.setAlarmId(alarm.getId());
             alertHistoryManager.getBaseMapper().insert(alarmLog);
         }
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        alarmSenderList = ImmutableList.copyOf(applicationContext.getBeansOfType(AlarmSender.class).values());
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 }

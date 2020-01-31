@@ -26,4 +26,7 @@ public class EmailAlarmDO extends BaseDO<Long> {
      * 英文逗号分隔的邮箱
      */
     private String email;
+
+    /** 常量 */
+    public static final String CONST_ALARM_ID = "alarmId";
 }
