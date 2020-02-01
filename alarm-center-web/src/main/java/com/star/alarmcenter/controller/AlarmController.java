@@ -31,7 +31,7 @@ public class AlarmController {
     private AlarmService alarmService;
 
     @GetMapping("/{id}")
-    public Result<AlarmVO> query(@PathVariable Long id) {
+    public Result<AlarmVO> get(@PathVariable Long id) {
         return Result.success(alarmService.get(id));
     }
 

@@ -1,6 +1,5 @@
 package com.star.alarmcenter.model.vos;
 
-import com.star.alarmcenter.common.enums.AlarmStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

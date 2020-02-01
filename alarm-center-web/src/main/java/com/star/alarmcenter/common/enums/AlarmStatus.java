@@ -9,9 +9,9 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 public enum AlarmStatus {
 
     /** 关闭 */
-    CLOSE(1, "开启"),
+    CLOSE(1, "关闭"),
     /** 开启 */
-    OPEN(2, "关闭"),
+    OPEN(2, "开启"),
     ;
 
     @EnumValue
