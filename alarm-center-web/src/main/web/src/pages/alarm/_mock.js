@@ -145,5 +145,6 @@ function postRule(req, res, u, b) {
 
 export default {
   'GET /api/rule': getRule,
+  'POST /alarm/query': getRule,
   'POST /api/rule': postRule,
 };

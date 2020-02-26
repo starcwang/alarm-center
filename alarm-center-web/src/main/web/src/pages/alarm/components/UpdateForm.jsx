@@ -1,277 +1,169 @@
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, DatePicker, Input, Modal, Radio, Select, Steps } from 'antd';
-import React, { Component } from 'react';
+import { Input, InputNumber, Modal } from 'antd';
+import React from 'react';
+import styles from '@/pages/alarm/style.less';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
-const { TextArea } = Input;
-const { Option } = Select;
-const RadioGroup = Radio.Group;
 
-class UpdateForm extends Component {
-  static defaultProps = {
-    handleUpdate: () => {},
-    handleUpdateModalVisible: () => {},
-    values: {},
-  };
+const UpdateForm = props => {
+  const { modalVisible, form, onSubmit: handleUpdate, onCancel, values } = props;
 
-  formLayout = {
-    labelCol: {
-      span: 7,
-    },
-    wrapperCol: {
-      span: 13,
-    },
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      formVals: {
-        name: props.values.name,
-        desc: props.values.desc,
-        key: props.values.key,
-        target: '0',
-        template: '0',
-        type: '1',
-        time: '',
-        frequency: 'month',
-      },
-      currentStep: 0,
-    };
-  }
-
-  handleNext = currentStep => {
-    const { form, onSubmit: handleUpdate } = this.props;
-    const { formVals: oldValue } = this.state;
+  const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const formVals = { ...oldValue, ...fieldsValue };
-      this.setState(
-        {
-          formVals,
-        },
-        () => {
-          if (currentStep < 2) {
-            this.forward();
-          } else {
-            handleUpdate(formVals);
-          }
-        },
-      );
+      form.resetFields();
+      handleUpdate(fieldsValue);
     });
   };
 
-  backward = () => {
-    const { currentStep } = this.state;
-    this.setState({
-      currentStep: currentStep - 1,
-    });
-  };
-
-  forward = () => {
-    const { currentStep } = this.state;
-    this.setState({
-      currentStep: currentStep + 1,
-    });
-  };
-
-  renderContent = (currentStep, formVals) => {
-    const { form } = this.props;
-
-    if (currentStep === 1) {
-      return [
-        <FormItem key="target" {...this.formLayout} label="监控对象">
-          {form.getFieldDecorator('target', {
-            initialValue: formVals.target,
-          })(
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="0">表一</Option>
-              <Option value="1">表二</Option>
-            </Select>,
-          )}
-        </FormItem>,
-        <FormItem key="template" {...this.formLayout} label="规则模板">
-          {form.getFieldDecorator('template', {
-            initialValue: formVals.template,
-          })(
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="0">规则模板一</Option>
-              <Option value="1">规则模板二</Option>
-            </Select>,
-          )}
-        </FormItem>,
-        <FormItem key="type" {...this.formLayout} label="规则类型">
-          {form.getFieldDecorator('type', {
-            initialValue: formVals.type,
-          })(
-            <RadioGroup>
-              <Radio value="0">强</Radio>
-              <Radio value="1">弱</Radio>
-            </RadioGroup>,
-          )}
-        </FormItem>,
-      ];
-    }
-
-    if (currentStep === 2) {
-      return [
-        <FormItem key="time" {...this.formLayout} label="开始时间">
-          {form.getFieldDecorator('time', {
-            rules: [
-              {
-                required: true,
-                message: '请选择开始时间！',
-              },
-            ],
-          })(
-            <DatePicker
-              style={{
-                width: '100%',
-              }}
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              placeholder="选择开始时间"
-            />,
-          )}
-        </FormItem>,
-        <FormItem key="frequency" {...this.formLayout} label="调度周期">
-          {form.getFieldDecorator('frequency', {
-            initialValue: formVals.frequency,
-          })(
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="month">月</Option>
-              <Option value="week">周</Option>
-            </Select>,
-          )}
-        </FormItem>,
-      ];
-    }
-
-    return [
-      <FormItem key="name" {...this.formLayout} label="规则名称">
-        {form.getFieldDecorator('name', {
-          rules: [
-            {
-              required: true,
-              message: '请输入规则名称！',
-            },
-          ],
-          initialValue: formVals.name,
-        })(<Input placeholder="请输入" />)}
-      </FormItem>,
-      <FormItem key="desc" {...this.formLayout} label="规则描述">
-        {form.getFieldDecorator('desc', {
-          rules: [
-            {
-              required: true,
-              message: '请输入至少五个字符的规则描述！',
-              min: 5,
-            },
-          ],
-          initialValue: formVals.desc,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符" />)}
-      </FormItem>,
-    ];
-  };
-
-  renderFooter = currentStep => {
-    const { onCancel: handleUpdateModalVisible, values } = this.props;
-
-    if (currentStep === 1) {
-      return [
-        <Button
-          key="back"
-          style={{
-            float: 'left',
-          }}
-          onClick={this.backward}
-        >
-          上一步
-        </Button>,
-        <Button key="cancel" onClick={() => handleUpdateModalVisible(false, values)}>
-          取消
-        </Button>,
-        <Button key="forward" type="primary" onClick={() => this.handleNext(currentStep)}>
-          下一步
-        </Button>,
-      ];
-    }
-
-    if (currentStep === 2) {
-      return [
-        <Button
-          key="back"
-          style={{
-            float: 'left',
-          }}
-          onClick={this.backward}
-        >
-          上一步
-        </Button>,
-        <Button key="cancel" onClick={() => handleUpdateModalVisible(false, values)}>
-          取消
-        </Button>,
-        <Button key="submit" type="primary" onClick={() => this.handleNext(currentStep)}>
-          完成
-        </Button>,
-      ];
-    }
-
-    return [
-      <Button key="cancel" onClick={() => handleUpdateModalVisible(false, values)}>
-        取消
-      </Button>,
-      <Button key="forward" type="primary" onClick={() => this.handleNext(currentStep)}>
-        下一步
-      </Button>,
-    ];
-  };
-
-  render() {
-    const { updateModalVisible, onCancel: handleUpdateModalVisible, values } = this.props;
-    const { currentStep, formVals } = this.state;
-    return (
-      <Modal
-        width={640}
-        bodyStyle={{
-          padding: '32px 40px 48px',
+  return (
+    <Modal
+      destroyOnClose
+      title="新建报警规则"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => onCancel()}
+    >
+      <FormItem
+        labelCol={{
+          span: 5,
         }}
-        destroyOnClose
-        title="规则配置"
-        visible={updateModalVisible}
-        footer={this.renderFooter(currentStep)}
-        onCancel={() => handleUpdateModalVisible(false, values)}
-        afterClose={() => handleUpdateModalVisible()}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="组别"
       >
-        <Steps
-          style={{
-            marginBottom: 28,
-          }}
-          size="small"
-          current={currentStep}
-        >
-          <Step title="基本信息" />
-          <Step title="配置规则属性" />
-          <Step title="设定调度周期" />
-        </Steps>
-        {this.renderContent(currentStep, formVals)}
-      </Modal>
-    );
-  }
-}
+        {form.getFieldDecorator('groups', {
+          initialValue: values.groups,
+          rules: [
+            {
+              required: true,
+              message: '请输入组别！',
+              min: 1,
+            },
+          ],
+        })(<Input placeholder="组别" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="code"
+      >
+        {form.getFieldDecorator('code', {
+          initialValue: values.code,
+          rules: [
+            {
+              required: true,
+              message: '请输入code！',
+              min: 1,
+            },
+          ],
+        })(<Input placeholder="code" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="名称"
+      >
+        {form.getFieldDecorator('name', {
+          initialValue: values.name,
+          rules: [
+            {
+              required: true,
+              message: '请输入名称！',
+              min: 1,
+            },
+          ],
+        })(<Input placeholder="名称" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="描述"
+      >
+        {form.getFieldDecorator('description', {
+          initialValue: values.description,
+          rules: [
+            {
+              required: false,
+              message: '请输入描述！',
+            },
+          ],
+        })(<Input.TextArea rows={1} placeholder="描述" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="js表达式"
+      >
+        {form.getFieldDecorator('expression', {
+          initialValue: values.expression,
+          rules: [
+            {
+              required: false,
+              message: '请输入表达式！',
+            },
+          ],
+        })(<Input.TextArea rows={1} placeholder="js表达式" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="报警触发规则"
+      >
+        {form.getFieldDecorator('rule', {
+          initialValue: values.rule,
+          rules: [
+            {
+              required: true,
+              message: '请输入正确的报警触发规则！',
+              pattern: '^[1-9]\\d*->[1-9]\\d*[dhms]$',
+            },
+          ],
+        })(<Input placeholder="报警触发规则" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{
+          span: 5,
+        }}
+        wrapperCol={{
+          span: 15,
+        }}
+        label="报警间隔秒数"
+      >
+        {form.getFieldDecorator('intervalSeconds', {
+          initialValue: values.intervalSeconds,
+          rules: [
+            {
+              required: true,
+              message: '请输入报警间隔秒数！',
+            },
+          ],
+        })(<InputNumber className={styles.width100} min={1} placeholder="报警间隔秒数" />)}
+      </FormItem>
+    </Modal>
+  );
+};
 
 export default Form.create()(UpdateForm);

@@ -1,13 +1,15 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Button, Divider, Dropdown, Menu, message, Switch } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button, Divider, message, Popconfirm, Switch } from 'antd';
+import React, { useRef, useState } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRule, addRule, removeRule } from './service';
+import { addRule, changeStatus, deleteAlarm, queryRule, updateRule } from './service';
+import styles from './style.less';
+
 /**
  * 添加节点
  * @param fields
@@ -16,9 +18,7 @@ const handleAdd = async fields => {
   const hide = message.loading('正在添加');
 
   try {
-    await addRule({
-      desc: fields.desc,
-    });
+    await addRule(fields);
     hide();
     message.success('添加成功');
     return true;
@@ -28,64 +28,60 @@ const handleAdd = async fields => {
     return false;
   }
 };
+
 /**
  * 更新节点
  * @param fields
  */
-
 const handleUpdate = async fields => {
-  const hide = message.loading('正在配置');
+  const hide = message.loading('正在修改');
 
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
+    await updateRule(fields);
     hide();
-    message.success('配置成功');
+    message.success('修改成功');
     return true;
   } catch (error) {
     hide();
-    message.error('配置失败请重试！');
+    message.error('修改失败请重试！');
     return false;
   }
 };
-/**
- *  删除节点
- * @param selectedRows
- */
 
-const handleRemove = async selectedRows => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
+const handleDelete = async id => {
   try {
-    await removeRule({
-      key: selectedRows.map(row => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
+    await deleteAlarm(id);
+    message.success('删除成功');
   } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
+    message.error('删除失败');
+  }
+};
+
+const handleChangeStatus = async (id, status) => {
+  try {
+    await changeStatus(id, status);
+  } catch (error) {
+    message.error('更新状态失败');
   }
 };
 
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [stepFormValues, setStepFormValues] = useState({});
+  const [updateFormValues, setUpdateFormValues] = useState({});
   const actionRef = useRef();
   const columns = [
     {
-      title: '分组',
-      dataIndex: 'group',
+      title: '创建时间',
+      dataIndex: 'gmtCreate',
+      hideInSearch: true,
     },
     {
-      title: '编码',
+      title: '组别',
+      dataIndex: 'groups',
+    },
+    {
+      title: 'code',
       dataIndex: 'code',
     },
     {
@@ -94,7 +90,7 @@ const TableList = () => {
     },
     {
       title: '描述',
-      dataIndex: 'desc',
+      dataIndex: 'description',
       hideInSearch: true,
     },
     {
@@ -113,12 +109,6 @@ const TableList = () => {
       hideInSearch: true,
     },
     {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      renderText: val => `${val} 万`,
-    },
-    {
       title: '状态',
       dataIndex: 'status',
       valueEnum: {
@@ -127,28 +117,18 @@ const TableList = () => {
           status: 'Default',
         },
         2: {
-          text: '运行中',
+          text: '开启',
           status: 'Processing',
         },
-        // 2: {
-        //   text: '已上线',
-        //   status: 'Success',
-        // },
-        // 3: {
-        //   text: '异常',
-        //   status: 'Error',
-        // },
       },
-      render: (_, record) => {
-        console.log('record=====', _, record);
-        return <Switch checked={record.status === 1} />;
-      },
-    },
-    {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      valueType: 'dateTime',
+      render: (_, record) => (
+        <Switch
+          checked={record.status === 2}
+          onChange={checked => {
+            handleChangeStatus(record.id, checked ? 2 : 1).then(() => {});
+          }}
+        />
+      ),
     },
     {
       title: '操作',
@@ -159,13 +139,23 @@ const TableList = () => {
           <a
             onClick={() => {
               handleUpdateModalVisible(true);
-              setStepFormValues(record);
+              setUpdateFormValues(record);
             }}
           >
-            配置
+            修改
           </a>
           <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <Popconfirm
+            title="确认删除？"
+            onConfirm={() => {
+              handleDelete(record.id).then(() => {});
+            }}
+            onCancel={null}
+            okText="确认"
+            cancelText="取消"
+          >
+            <a className={styles.redColor}>删除</a>
+          </Popconfirm>
         </>
       ),
     },
@@ -176,52 +166,14 @@ const TableList = () => {
         headerTitle="查询表格"
         actionRef={actionRef}
         rowKey="key"
-        toolBarRender={(action, { selectedRows }) => [
+        toolBarRender={() => [
           <Button icon={<PlusOutlined />} type="primary" onClick={() => handleModalVisible(true)}>
             新建
           </Button>,
-          selectedRows && selectedRows.length > 0 && (
-            <Dropdown
-              overlay={
-                <Menu
-                  onClick={async e => {
-                    if (e.key === 'remove') {
-                      await handleRemove(selectedRows);
-                      action.reload();
-                    }
-                  }}
-                  selectedKeys={[]}
-                >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
-                  <Menu.Item key="approval">批量审批</Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                批量操作 <DownOutlined />
-              </Button>
-            </Dropdown>
-          ),
         ]}
-        tableAlertRender={(selectedRowKeys, selectedRows) => (
-          <div>
-            已选择{' '}
-            <a
-              style={{
-                fontWeight: 600,
-              }}
-            >
-              {selectedRowKeys.length}
-            </a>{' '}
-            项&nbsp;&nbsp;
-            <span>
-              服务调用次数总计 {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
-            </span>
-          </div>
-        )}
+        tableAlertRender={false}
         request={params => queryRule(params)}
         columns={columns}
-        rowSelection={{}}
       />
       <CreateForm
         onSubmit={async value => {
@@ -238,14 +190,14 @@ const TableList = () => {
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
       />
-      {stepFormValues && Object.keys(stepFormValues).length ? (
+      {updateFormValues && Object.keys(updateFormValues).length ? (
         <UpdateForm
           onSubmit={async value => {
             const success = await handleUpdate(value);
 
             if (success) {
               handleModalVisible(false);
-              setStepFormValues({});
+              setUpdateFormValues({});
 
               if (actionRef.current) {
                 actionRef.current.reload();
@@ -254,10 +206,10 @@ const TableList = () => {
           }}
           onCancel={() => {
             handleUpdateModalVisible(false);
-            setStepFormValues({});
+            setUpdateFormValues({});
           }}
           updateModalVisible={updateModalVisible}
-          values={stepFormValues}
+          values={updateFormValues}
         />
       ) : null}
     </PageHeaderWrapper>

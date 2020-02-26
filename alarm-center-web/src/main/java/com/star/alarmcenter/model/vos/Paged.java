@@ -20,6 +20,10 @@ import lombok.ToString;
 public class Paged<T> {
     /** 总计 */
     private long total;
+    /** 页码 */
+    private int pageNum;
+    /** 页面大小 */
+    private int pageSize;
     /** 数据 */
     private List<T> data;
 }

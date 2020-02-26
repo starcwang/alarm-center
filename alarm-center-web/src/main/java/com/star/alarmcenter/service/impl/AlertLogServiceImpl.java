@@ -24,9 +24,10 @@ public class AlertLogServiceImpl implements AlertLogService {
 
     @Override
     public Paged<AlertLogVO> query(AlertLogQueryParamVO param) {
-        Page<AlertLogVO> page = new Page<>(ObjectUtils.defaultIfNull(param.getPageNum(), 1),
-            ObjectUtils.defaultIfNull(param.getPageSize(), 50));
+        int pageNum = ObjectUtils.defaultIfNull(param.getPageNum(), 1);
+        int pageSize = ObjectUtils.defaultIfNull(param.getPageSize(), 50);
+        Page<AlertLogVO> page = new Page<>(pageNum, pageSize);
         IPage<AlertLogVO> alertLogPage = alertLogDAO.query(page, param);
-        return new Paged<>(alertLogPage.getTotal(), alertLogPage.getRecords());
+        return new Paged<>(alertLogPage.getTotal(), pageNum, pageSize, alertLogPage.getRecords());
     }
 }

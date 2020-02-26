@@ -37,10 +37,11 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public Paged<AlarmVO> query(AlarmQueryParamVO param) {
-        Page<AlarmDO> page = new Page<>(ObjectUtils.defaultIfNull(param.getPageNum(), 1),
-            ObjectUtils.defaultIfNull(param.getPageSize(), 50));
+        int pageNum = ObjectUtils.defaultIfNull(param.getPageNum(), 1);
+        int pageSize = ObjectUtils.defaultIfNull(param.getPageSize(), 50);
+        Page<AlarmDO> page = new Page<>(pageNum, pageSize);
         IPage<AlarmDO> alarmPage = alarmDAO.query(page, param);
-        return new Paged<>(alarmPage.getTotal(),
+        return new Paged<>(alarmPage.getTotal(), pageNum, pageSize,
             alarmPage.getRecords().stream().map(this::convert).collect(Collectors.toList()));
     }
 

@@ -27,6 +27,6 @@ public class AlertHistoryServiceImpl implements AlertHistoryService {
         Page<AlertHistoryVO> page = new Page<>(ObjectUtils.defaultIfNull(param.getPageNum(), 1),
             ObjectUtils.defaultIfNull(param.getPageSize(), 50));
         IPage<AlertHistoryVO> alertHistoryPage = alertHistoryDAO.query(page, param);
-        return new Paged<>(alertHistoryPage.getTotal(), alertHistoryPage.getRecords());
+        return new Paged<>(alertHistoryPage.getTotal(), param.getPageNum(), param.getPageSize(), alertHistoryPage.getRecords());
     }
 }
