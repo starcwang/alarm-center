@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AlertHistoryServiceImpl implements AlertHistoryService {
 
+
     @Resource
     private AlertHistoryDAO alertHistoryDAO;
 
